@@ -1,0 +1,148 @@
+Ejercicio 1
+
+A continuación se muestran procesos que son ejecutados concurrentemente. 
+La variable X es compartida y se inicializa en 0. 
+No hay información acerca de cómo serán ejecutados por el scheduler.
+    
+    Proceso A:
+        X = X + 1;
+        printf(" % d", X);
+    Proceso B:
+        X = X + 1;
+
+a) ¿Hay una única salida en pantalla posible?
+No, ya que puede suceder que B sume 1 a X antes que A lo haga o viceversa.
+
+b) Si existen varias opciones, indicar todas las salidas posibles.
+Las posibles salidas son Uno o Dos. Existe la opcion de que el print suceda antes de que B sume uno a X, entonces
+por pantalla se muestra el Uno, o que el print suceda luego de que B sume uno, entonces se imprimira dos por pantalla.
+
+--------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 2
+
+Ídem ejercicio anterior. Las variables X e Y son compartidas y se inicializan en 0.
+    Proceso A:
+        for (; X < 4; X++) {
+            Y = 0;
+            printf(" % d", X);
+            Y = 1;
+        }
+    Proceso B:
+        while (X < 4) {
+            if (Y == 1)
+            printf("a");
+        }
+
+a) ¿Hay una única salida en pantalla posible?
+No, si bien existe la Y como "variable de control" y el B no cambia variables de A. 
+Aunque el A siempre imprima 0,1,2,3, y el B siempre imprima "a", puede variar el orden en el que se imprimen 
+y tambien la cantidad de "a" que se imprimen.
+
+b) Si existen varias opciones, indicar todas las salidas posibles.
+Existen muchas posibilidades disintas, en todas se imprimen el 0,1,2 y 3 pero con disintas cantidades de "a"
+en el medio o niguna a. Salidas observadas pero no las unicas: 0 1 a2 3 // 0 1 2 3 // 0 1 2 3a
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 3
+
+Se tiene un sistema con cuatro procesos accediendo a una variable compartida y un mutex. Del
+valor de la variable dependerán ciertas decisiones que tome cada proceso. Nos aseguran que cada vez
+que un proceso lee de la variable compartida, previamente se solicita el mutex y luego lo libera. ¿Es
+posible escribir procesos que cumplan con estas características, pero que puedan ser víctimas de una
+race condition?
+
+Si solo se lee la variable dentro del mutex pero se modifica fuera, entonces si. 
+En cambio, si la variable solo es leida y modificada dentro del mutex, no hay race condition.
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 4
+
+La operación wait() sobre semáforos suele utilizar una cola para almacenar los pedidos que se
+encuentran en espera. Si en lugar de una cola utilizara una pila (LIFO), ¿cuáles de las siguientes
+propiedades podrían afectarse: EXCL, FAIRNESS, WAIT-FREEDOM.
+
+EXCL: "Nunca hay mas de un proceso dentro de la seccion critica"
+No, la exclusion mutua no se ve afectada
+
+FAIRNESS: “No se van a dar escenarios poco realistas donde alguien es postergado para siempre” 
+(definicion de lucy: si hay un proceso en la cola se va a ejecutar)
+Si, porque puede suceder que luego los procesos que estuvieron esperando por mas tiempo nunca lleguen a 
+ejecutarse porque siempre estan entrando nuevos y los viejos se quedan en "el fondo".
+
+WAIT-FREEDOM: “Todo proceso que intenta acceder a la seccion critica, en algun momento lo logra, 
+cada vez que lo intenta”.
+Si, podria afectar el wait-freedom ya que si cambiamos a LIFO y nosotros tenemos dos procesos A y B en el cual A da la 
+senial al semaforo para que B proceda, entonces como B se va a ejecutar antes que A, B va a quedar trabado sin poder 
+acceder a la seccion critica
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 5 
+
+Demostrar que, en caso de que las operaciones de semáforos wait() y signal() no se ejecuten
+atómicamente, entonces se viola la propiedad EXCL (exclusión mutua).
+Pista: mostrar un contraejemplo de scheduling posible.
+
+EXCL ≡ #CRIT ≤ 1, entonces quiero demostrar que si no son operaciones atomicas, puedo tener mas de dos procesos en la
+seccion critica a la vez.
+
+wait() -> while(s <= 0){sleep}; s--;
+
+A ejecuta la instruccion 1 del wait hasta que encuentra que puede entrar (por lo que no decrementa s y s sigue en 1) 
+y termina su quantum.
+B ve que s es > 0, entonces dice "eu s > 0, puedo entrar a la seccion critica" y entra tambien, pues a nunca ejecuto su 
+s-- upsi.
+
+signal() -> s++; if(alguien esperando){wake up};
+A ejecuta s++;
+B ejecuta su s++;
+A ejecuta si if; -> despierta a un C que estaba en wait, pero C solo decremento en uno y s sigue > 0.
+B ejecuta su if; -> despieta a un D, que se fija y ve que s > 0, entonces tambien entra a la seccion critica.  
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 6
+Se tienen n procesos: P1, P2, · · · Pn que ejecutan el siguiente código. Se espera que todos los procesos terminen de 
+ejecutar la función preparado() antes de que alguno de ellos llame a la función critica(). ¿Por qué la siguiente solución
+rompe la propiedad WAIT-FREEDOM? Solucionar el código y justificar por qué su solución cumple con la propiedad.
+
+    preparado()
+
+    mutex.wait()
+    count = count + 1
+    mutex.signal()
+
+    if (count == n)
+        barrera.signal()
+
+    barrera.wait()
+
+    critica()
+
+Rompe la propiedad wait freedom porque cada proceso luego de aumentar el count se queda esperando, cuando el count llega 
+a n, el proceso Pn-1 continua su ejecucion porque el proceso Pn le tiro el signal. Pero no pasa nada mas, porque el proceso
+Pn-1 no le tira signal a nadie y tuki listo quedaron todos en espera y ninguno entra a su seccion critica.
+
+Opcion Lucy: Agregar un signal despues de critica(). Asi luego de que Pn-1 ejecuta su critica(), llama a alguien mas 
+y terminan todos ejecutando su critica().
+
+    ...
+    critica()
+    barrera.signal()
+
+Opcion Juaco: Invertir el signal y la barrera. Si el proceso es menor Pn, se queda esperando. Si es n, tira la signal y 
+empieza la cadena, pero todos ejecutn su signal antes de critica(), haciendo q varios procesos puedan entrar a critica()
+al mismo tiempo. La respuesta igual es correcta porque no pide que se cumpla EXCL. Pero moralmente esta mal.
+
+    ....
+    if (count < n)
+        barrera.wait()
+
+    barrera.signal()
+
+    critica()
+
+-------------------------------------------------------------------------------------------------------------------

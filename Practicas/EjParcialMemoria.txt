@@ -1,0 +1,57 @@
+EJERCICIO 1
+
+Se tienen dos computadoras, una cuenta com 3 marcos de memoria, y la otra cuenta con 4 marcos. 
+Si se tienen en ambas computadoras la siguiente secuencia de solicitudes de paginas:
+
+    3 2 1 0 3 2 4 3 2 1 0 4
+
+y se utiliza FIFO como estrategia de reemplazo.
+
+1. Cual computadora deberia tener menos fallos de pagina? Justifique su respuesta.
+
+Intuitivamente, toda la clase esta de acuerdo que en este caso, la segunda opcion tiene menos fallos.
+Que haya mas marcos posiblemente significa que hay menos fallos.
+
+2. Calcule los fallos de pagina para cada computadora 
+
+3 MARCOS:
+
+    3 |3r|  |  |     3/ / / - page fault           
+    2 |3n|2r|  |     3/2/ / - page fault
+    1 |3n|2n|1r|     3/2/1/ - page fault
+    0 |0r|2n|1n|     2/1/0/ - page fault
+    3 |0n|3r|1n|     1/0/3/ - page fault
+    2 |0n|3n|2r|     0/3/2/ - page fault
+    4 |4r|3n|2n|     3/2/4/ - page fault
+    3 |4n|3v|2n|     3/2/4/ - hit!
+    2 |4n|3n|2v|     3/2/4/ - hit!
+    1 |4n|1r|2n|     2/4/1/ - page fault
+    0 |4n|1n|0r|     4/1/0/ - page fault
+    4 |4v|1n|0n|     4/1/0/ - hit!
+
+    HIT RATE: 3/12
+
+4 MARCOS:
+
+    3 |3r|  |  |  |     3/ / / / - page fault           
+    2 |3n|2r|  |  |     3/2/ / / - page fault
+    1 |3n|2n|1r|  |     3/2/1/ / - page fault
+    0 |3n|2n|1n|0r|     3/2/1/0/ - page fault
+    3 |3v|2n|1n|0n|     3/2/1/0/ - hit!
+    2 |3n|2v|1n|0n|     3/2/1/0/ - hit!
+    4 |4r|2n|1n|0n|     2/1/0/4/ - page fault
+    3 |4n|3r|1n|0n|     1/0/4/3/ - page fault
+    2 |4n|3n|2r|0n|     0/4/3/2/ - page fault
+    1 |4n|3n|2n|1r|     4/3/2/1/ - page fault
+    0 |0r|3n|2n|1n|     3/2/1/0/ - page fault
+    4 |0n|4r|2n|1n|     2/1/0/4/ - page fault
+
+    HIT RATE: 2/12
+
+3. El resultado del calculo coincide con el resultado esperado? Justifique su respuesta.
+
+No, porque en realidad existen casos en los que no depende de la cantidad de marcos que se tenga, sino de la 
+secuencia de paginas que se pida (y la estrategia de reemplazo).
+
+
+
