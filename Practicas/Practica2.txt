@@ -1,0 +1,96 @@
+Ejercicio 1
+
+La siguiente secuencia describe la forma en la que un proceso utiliza el procesador.
+    
+    Tiempo  Evento
+    0       load store
+    1       add store
+    2       read de archivo
+    3       espera E/S
+    .. ..
+    10      espera E/S
+    11      store increment
+    12      inc
+    13      write en archivo
+    14      espera E/S
+    .. ...
+    20      espera E/S
+    21      load store
+    22      add store
+
+a) Identificar las ráfagas de CPU y las ráfagas de E/S.
+0-2     CPU
+2-10    E/S
+11-13   CPU
+14-20   E/S
+21-22   CPU
+
+b) ¿Qué duración tiene cada ráfaga?
+Las de CPU duran todas 3.
+Mientras que las de E/S duran 8 y 7 respectivamente.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 2
+
+Sean P0, P1 y P2 tales que:
+    P0 tiene ráfagas cortas de E/S a ciertos dispositivos.
+    P1 frecuentemente se bloquea leyendo de la red.
+    P2 tiene ráfagas prolongadas de alto consumo de CPU y luego de escritura a disco.
+    
+a) Al planificar estos procesos, ¿cuánto quantum (mucho/poco) y qué prioridad (alta/baja) habría
+que asignarles y por qué?
+Si P0 se va a andar bloqueando y desbloqueando todo el tiempo, podria ponerle quantums intermedios y prioridad media
+a p1 le pondria quantums cortos porque no va a estar mucho usando la cpu si se bloquea con frecuencia y prioridad baja
+a p2 le daria quantums mas largos y prioridad alta porque se que necesita esa cpu mas que el resto. 
+
+b) Indicar a qué tipo de aplicación podría estar correspondiendo cada proceso.
+P0 podria ser un editor de texto, que cada muy poco tiempo tiene que ir leyendo del teclado
+p1 puede ser un browser que tiene que leer info de internet constantemente
+p2 puede ser un juego que usa mucha cpu, aunque tambien podria ser chrome jajaja the joker
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 3
+¿A qué tipo de scheduler corresponde el siguiente diagrama de transición de estados de un proceso?
+Es un scheduler Non-preemptive, es decir sin desalojo, porque no hay flechita entre running y ready.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 4
+¿Cuáles de los siguientes algoritmos de scheduling pueden resultar en starvation (inanición) y en
+qué condiciones?
+
+a) Round-robin.
+No resulta en inanicion.
+b) Por prioridad.
+Puede resultar en inanicion si entran procesos con alta prioridad todo el tiempo haciendo que los que tienen mas bajas
+nunca se ejecuten.
+c) SJF (trabajo más corto primero).
+Puede resultar en inanicion si siguen entrando procesos con cortos tiempos de ejecucion, haciendo que los mas largos 
+nunca se ejecuten.
+d) FIFO.
+No resulta en inanicion.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 5
+
+Considere una modificación a round-robin en la que un mismo proceso puede estar encolado varias
+veces en la lista de procesos ready.
+a) ¿Qué impacto tendría esta modificación?
+El proceso repetido no tendria que esperar a que todos los demas de la cola se ejecuten, sino que podria meter uso de 
+CPU entre otros procesos. Ademas esto tambien puede afectar la cantidad de page faults dependiendo del tratamiento
+que tenga la memoria.
+b) Dar ventajas y desventajas de este esquema. Piense en el efecto logrado, no en la forma
+de implementarlo.
+La ventaja es que si quiero puedo hacer que un proceso se ejecute mas rapido ya que lo puedo poner entre otros procesos y
+no debe esperar que terminen todos los que existen para poder continuar su ejecucion.
+La desventaja es que ya no es tan fair como antes, y que otros procesos pueden tardar mas, porque esta este otro 
+repetido.
+c) ¿Se le ocurre alguna otra modificación para mantener las ventajas sin tener que duplicar
+las entradas en la lista de procesos ready?
+Si, prioridades.
+
+-----------------------------------------------------------------------------------------------------------------------
+

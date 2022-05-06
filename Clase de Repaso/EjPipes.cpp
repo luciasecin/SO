@@ -1,3 +1,5 @@
+//Este ejercicio hecho en clase tiene muchos problemas!
+
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>

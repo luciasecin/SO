@@ -146,3 +146,130 @@ al mismo tiempo. La respuesta igual es correcta porque no pide que se cumpla EXC
     critica()
 
 -------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 7
+
+Comparar su solución del ejercicio anterior con la solución basada en atómicos vista en la teórica
+y responder las siguientes preguntas (el de la teorica es el mismo que la verion de Juaco):
+
+a) ¿Cuál de las alternativas genera un código más legible?
+El de la teorica tiene una linea menos so...supongo que esa jajaja.
+
+b) ¿Cuál de ellas es más eficiente? ¿Por qué?
+La mia, porque la otra no tiene exclusion mutua, va a funcionar re mal sino je.
+
+c) ¿Qué soporte requiere cada una de ellas del SO? ¿Y del HW?
+Requiere desalojo del SO y que el HW pueda soportar ejecutar instrucciones atomicas.
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 8
+
+Escribir el procedimiento TryToLock() que intenta tomar un lock al estilo CAS pero retorna el
+control si no lo puede lograr, en lugar de quedarse haciendo espera activa.
+
+CAS = Compare and Swap
+
+atomic bool TryToLock(){
+        return reg.getAndSet(true);
+}
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 9
+
+Se tienen N procesos, P0,P1, ..., PN−1 (donde N es un parámetro). Se los quiere sincronizar de
+manera que la secuencia de ejecución sea Pi,Pi+1, ..., PN−1,P0, ..., Pi−1 (donde i es otro parámetro).
+Escribir el código para solucionar este problema de sincronización utilizando semáforos (no olvidar los
+valores iniciales).
+
+puto el que lee. Intentamos hacerlo repetidas veces en C++. No subieron nuna la clase de threads :(
+AGUANTE EL PSEUDOCODIGOOO
+
+semaforo arraySem[N];
+
+for j in N:
+    arraySem[j] = 0;
+
+arraySem[i] = 1;
+
+void proceso(int numero){
+    wait(arraySem[numero]);
+
+    //ejecucion del codigo del proceso
+
+    if(numero = N-1)
+        signal(arraySem[numero + 1]);
+    else
+        signal(arraySem[0]);
+
+}
+
+    
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 10
+
+Escribir el código con semáforos (no se olvide de los valores iniciales) para los siguientes problemas
+y argumentar por qué su solución cumple con la propiedad de LOCK-FREEDOM:
+
+1. Se tienen tres procesos (A, B y C). Se desea que el orden en que se ejecutan sea el orden
+alfabético, es decir que las secuencias normales deben ser: ABC, ABC, ABC, ...
+
+2. Idem anterior, pero se desea que la secuencia normal sea: BBCA, BBCA, BBCA, ...
+
+3. Se tienen un productor (A) y dos consumidores (B y C) que actúan no determinísticamente.
+La información provista por el consumidor debe ser retirada siempre 2 veces, es decir que las
+secuencias normales son: ABB, ABC, ACB o ACC. Nota: ¡Ojo con la exclusión mutua!
+
+4. Se tienen un productor (A) y dos consumidores (B y C). Cuando C retira la información, la
+retira dos veces. Los receptores actúan en forma alternada. Secuencia normal: ABB, AC, ABB,
+AC, ABB, AC...
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 11
+
+Suponer que se tienen N procesos Pi, cada uno de los cuales ejecuta un conjunto de sentencias
+ai y bi. ¿Cómo se los puede sincronizar de manera tal que los bi se ejecuten después de que se hayan
+ejecutado todos los ai?
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 12
+Una definición de deadlock muy difundida en la literatura es la siguiente: “En computación concurrente, un deadlock es un estado en el cual cada miembro de un grupo de acciones está esperando
+que otro miembro libere un lock”.
+    Considerar los siguientes procesos:
+
+    proceso p1 { lock(r); while (true) {sleep();} }
+    proceso p2 { lock(r);}
+
+a) Estos procesos, ¿pueden completar su ejecución?
+b) Tal situación, ¿entra dentro de la definición de deadlock propuesta? ¿Debería?
+
+Considerar ahora el proceso cuyo código es el siguiente y volver a responder las preguntas anteriores:
+
+void f() { lock(r); f(); release(r); }
+proceso p3 { f(); }
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ejercicio 13 F
+En el año 1971 Edward Coffman y colaboradores propusieron cuatro condiciones necesarias para
+que se dé un deadlock2
+, que se conocen como condiciones de Coffman:
+1. Condición de exclusión mutua: existencia de al menos de un recurso compartido por los procesos,
+al cual solo puede acceder uno simultáneamente.
+2. Condición de retención y espera: al menos un proceso Pi ha adquirido un recurso Ri
+, y lo retiene
+mientras espera al menos un recurso Rj que ya ha sido asignado a otro proces o.
+3. Condición de no expropiación: los recursos no pueden ser expropiados por los proces,os es decir,
+los recursos solo podrán ser liberados voluntariamente por sus propietarios.
+4. Condición de espera circular: dado el conjunto de procesos P0, . . . , Pm (subconjunto del total de
+procesos original), P0 está esperando un recurso adquirido por P1, que está esperando un recurso
+adquirido por P2, ..., que está esperando un recurso adquirido por Pm, que está esperando un
+recurso adquirido por P0. Esta condición implica la condición de retención y espera.
+Considerar los conjuntos de procesos del ejercicio anterior y responder:
+a) ¿Se cumplen las condiciones de Coffman?
+b) ¿Bajo qué condiciones considera que estas condiciones son realmente necesarias para que
+haya deadlock?
